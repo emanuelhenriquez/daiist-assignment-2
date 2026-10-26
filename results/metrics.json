@@ -1,0 +1,263 @@
+{
+  "classes": [
+    "Normal",
+    "Pneumonia_bacteria",
+    "Pneumonia_virus"
+  ],
+  "positive_class": "pneumonia (bacterial or viral)",
+  "normal_class": "Normal",
+  "models": {
+    "finetuned yolo11n-cls": {
+      "accuracy": 0.793,
+      "per_class": [
+        {
+          "class": "Normal",
+          "support": 194,
+          "precision": 0.864,
+          "recall": 0.985
+        },
+        {
+          "class": "Pneumonia_bacteria",
+          "support": 362,
+          "precision": 0.776,
+          "recall": 0.873
+        },
+        {
+          "class": "Pneumonia_virus",
+          "support": 203,
+          "precision": 0.725,
+          "recall": 0.468
+        }
+      ],
+      "confusion_matrix": [
+        [
+          191,
+          1,
+          2
+        ],
+        [
+          12,
+          316,
+          34
+        ],
+        [
+          18,
+          90,
+          95
+        ]
+      ],
+      "binary_at_argmax": {
+        "sensitivity": 0.947,
+        "specificity": 0.985,
+        "tp": 535,
+        "fn": 30,
+        "fp": 3,
+        "tn": 191
+      }
+    },
+    "trivial: always 'Pneumonia_bacteria'": {
+      "accuracy": 0.477,
+      "per_class": [
+        {
+          "class": "Normal",
+          "support": 194,
+          "precision": 0.0,
+          "recall": 0.0
+        },
+        {
+          "class": "Pneumonia_bacteria",
+          "support": 362,
+          "precision": 0.477,
+          "recall": 1.0
+        },
+        {
+          "class": "Pneumonia_virus",
+          "support": 203,
+          "precision": 0.0,
+          "recall": 0.0
+        }
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          194,
+          0
+        ],
+        [
+          0,
+          362,
+          0
+        ],
+        [
+          0,
+          203,
+          0
+        ]
+      ],
+      "binary_at_argmax": {
+        "sensitivity": 1.0,
+        "specificity": 0.0,
+        "tp": 565,
+        "fn": 0,
+        "fp": 194,
+        "tn": 0
+      }
+    },
+    "zero-shot pretrained yolo11n-cls (ImageNet)": {
+      "accuracy": 0.586,
+      "per_class": [
+        {
+          "class": "Normal",
+          "support": 194,
+          "precision": 0.675,
+          "recall": 0.588
+        },
+        {
+          "class": "Pneumonia_bacteria",
+          "support": 362,
+          "precision": 0.561,
+          "recall": 0.909
+        },
+        {
+          "class": "Pneumonia_virus",
+          "support": 203,
+          "precision": 0.5,
+          "recall": 0.01
+        }
+      ],
+      "confusion_matrix": [
+        [
+          114,
+          79,
+          1
+        ],
+        [
+          32,
+          329,
+          1
+        ],
+        [
+          23,
+          178,
+          2
+        ]
+      ],
+      "binary_at_argmax": {
+        "sensitivity": 0.903,
+        "specificity": 0.588,
+        "tp": 510,
+        "fn": 55,
+        "fp": 80,
+        "tn": 114
+      },
+      "most_common_imagenet_guesses": [
+        [
+          "radiator",
+          358
+        ],
+        [
+          "water_bottle",
+          163
+        ],
+        [
+          "isopod",
+          76
+        ],
+        [
+          "vault",
+          39
+        ],
+        [
+          "hoopskirt",
+          26
+        ]
+      ]
+    }
+  },
+  "dataset": {
+    "images_total": 5190,
+    "patients_total": 2846,
+    "per_split_per_class": {
+      "test": {
+        "Normal": 194,
+        "Pneumonia_bacteria": 362,
+        "Pneumonia_virus": 203
+      },
+      "train": {
+        "Normal": 958,
+        "Pneumonia_bacteria": 1769,
+        "Pneumonia_virus": 948
+      },
+      "val": {
+        "Normal": 188,
+        "Pneumonia_bacteria": 381,
+        "Pneumonia_virus": 187
+      }
+    },
+    "per_class_total": {
+      "Pneumonia_bacteria": 2512,
+      "Normal": 1340,
+      "Pneumonia_virus": 1338
+    },
+    "image_sizes_sample": {
+      "640x640": 200
+    },
+    "patients_with_several_images": 1074
+  },
+  "training": {
+    "base_model": "yolo11n-cls.pt",
+    "epochs": 15,
+    "imgsz": 224,
+    "batch": 32,
+    "seed": 0,
+    "device": "mps",
+    "dataset": "inatel/pneumonia-classification-imrcv/1"
+  },
+  "costs": {
+    "single_threshold": 0.04,
+    "low": 0.03,
+    "high": 0.84,
+    "strategies": {
+      "do nothing (everyone passes)": {
+        "cost_per_1000": 375000.0,
+        "review_share": 0.0
+      },
+      "radiologist reads everything": {
+        "cost_per_1000": 10000.0,
+        "review_share": 1.0,
+        "reviews_per_day": 150.0,
+        "review_hours_per_day": 7.5,
+        "radiologists_needed": 1.25
+      },
+      "model alone (threshold 0.04)": {
+        "cost_per_1000": 9337.0,
+        "review_share": 0.0,
+        "missed_pneumonia_rate": 0.005,
+        "false_alarm_rate": 0.098,
+        "reviews_per_day": 0.0,
+        "review_hours_per_day": 0.0,
+        "radiologists_needed": 0.0
+      },
+      "model + review (0.03 to 0.84)": {
+        "cost_per_1000": 3003.0,
+        "review_share": 0.101,
+        "missed_pneumonia_rate": 0.005,
+        "false_alarm_rate": 0.0,
+        "reviews_per_day": 15.18,
+        "review_hours_per_day": 0.76,
+        "radiologists_needed": 0.13
+      }
+    },
+    "assumptions": {
+      "COST_FN": 1500.0,
+      "COST_FP": 100.0,
+      "COST_REVIEW": 10.0,
+      "COST_TP": 0.0,
+      "COST_TN": 0.0,
+      "BASE_RATE": 0.25,
+      "CASES_PER_DAY": 150,
+      "MINUTES_PER_REVIEW": 3,
+      "REVIEW_HOURS_PER_DAY": 6
+    }
+  }
+}

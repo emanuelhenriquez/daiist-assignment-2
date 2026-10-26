@@ -14,3 +14,7 @@ runs/
 
 # Never commit your API key
 .env
+
+# Pretrained checkpoints Ultralytics downloads into the repo root
+/yolo11n-cls.pt
+/yolo11n.pt
